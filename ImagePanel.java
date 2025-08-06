@@ -15,23 +15,9 @@ import java.io.IOException;
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     private static final double factor = 1.1;
-    private BufferedImage originalImage = null;
     private BufferedImage image = null;
     private int imageOffsetX, imageOffsetY;
     private ControlPanel controlPanel;
-
-
-    private BufferedImage copyImage(BufferedImage image){
-        BufferedImage copy = new BufferedImage(
-                image.getWidth(),
-                image.getHeight(),
-                image.getType()
-        );
-        Graphics g = copy.getGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return copy;
-    }
 
     public ImagePanel(int x, int y, int width, int height) {
         this.setBounds(x, y, width, height);
@@ -51,8 +37,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
     public void readImage(File file) {
         try {
-            originalImage = ImageIO.read(file);
-            image = copyImage(originalImage);
+            image = ImageIO.read(file);
             repaint();
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,53 +77,15 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void setOrig() {
-        if (originalImage != null) {
-            image = copyImage(originalImage);
-            repaint();
-        }
+
     }
 
     public void flipX() {
-    if (image == null){ return;}
 
-    int width = image.getWidth();
-    int height = image.getHeight();
-
-    for (int y = 0; y < height; y++){
-        for (int x = 0; x < width / 2; x++){
-            int xOpposite = width - 1 - x;
-
-            //get the pixels
-            int leftPixel = image.getRGB(x,y);
-            int rightPixel = image.getRGB(xOpposite,y);
-
-            //swap the pixels
-            image.setRGB(x,y,rightPixel);
-            image.setRGB(xOpposite,y,leftPixel);
-        }
-    }
-    repaint();
     }
 
     public void flipY() {
-    if (image == null){return;}
-    int width = image.getWidth();
-    int height = image.getHeight();
 
-    for (int x = 0; x<width;x++){
-        for (int y = 0; y<height/2; y++){
-            int yOpposite = height - 1 - y;
-
-            //get the pixels
-            int topPixel = image.getRGB(x,y);
-            int bottomPixel = image.getRGB(x,yOpposite);
-
-            //swap pixels
-            image.setRGB(x,y,bottomPixel);
-            image.setRGB(x,yOpposite,topPixel);
-        }
-    }
-    repaint();
     }
 
     public void zoomIn() {
