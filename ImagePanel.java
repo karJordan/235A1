@@ -95,10 +95,13 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
 
             //translate to center
-            transform.translate(drawX + tx * scaleFactor, drawY +  ty * scaleFactor);
+            transform.translate(drawX,drawY);
 
             //Scale and flip
             transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
+
+            //image flip translation
+            transform.translate(tx,ty);
 
             //System.out.println("ImagePanel width: " + getWidth());
             //System.out.println("Image width: " + image.getWidth());
