@@ -91,7 +91,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             double tx = (xFlipped ?  imgWidth: 0);
             double ty = (yFlipped ? imgHeight: 0);
             transform.translate(tx + drawX  / scaleFactor, ty + drawY / scaleFactor);
-            
+
             //System.out.println("ImagePanel width: " + getWidth());
             //System.out.println("Image width: " + image.getWidth());
 
@@ -124,14 +124,25 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void zoomIn() {
-
+        scaleFactor *= factor;
+        repaint();
     }
 
     public void zoomOut() {
+        scaleFactor /= factor;
+        repaint();
 
     }
 
     public void zoomFit() {
+        if (image == null){return;}
+        double panelWidth = getWidth();
+        double panelHeight = getHeight();
+        double imageWidth = image.getWidth();
+        double imageHeight = image.getHeight();
+
+        scaleFactor = Math.min(panelWidth / imageWidth, panelHeight/ imageHeight);
+        repaint();
 
     }
 
