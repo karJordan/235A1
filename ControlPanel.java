@@ -55,7 +55,7 @@ public class ControlPanel extends JPanel {
         zoomInButton.setBounds( startX +addButtonSpace*3, 10, buttonWidth,buttonHeight);
         add(zoomInButton);
         zoomInButton.addActionListener(e -> {
-            if (imagePanel != null && imagePanel.hasImage()){System.out.println("Zoom In");}
+            if (imagePanel != null && imagePanel.hasImage()){imagePanel.zoomIn();}
         });
 
         //add "Zoom Out" button and create action
@@ -63,7 +63,7 @@ public class ControlPanel extends JPanel {
         zoomOutButton.setBounds(startX + addButtonSpace*4, 10, buttonWidth,buttonHeight);
         add(zoomOutButton);
         zoomOutButton.addActionListener(e -> {
-            if (imagePanel != null && imagePanel.hasImage()){System.out.println("Zoom Out");}
+            if (imagePanel != null && imagePanel.hasImage()){imagePanel.zoomOut();}
         });
 
         //add "Zoom Fit" button and create action
@@ -71,7 +71,7 @@ public class ControlPanel extends JPanel {
         zoomFitButton.setBounds(startX+addButtonSpace*5,10,buttonWidth,buttonHeight);
         add(zoomFitButton);
         zoomFitButton.addActionListener(e -> {
-            if (imagePanel != null && imagePanel.hasImage()){System.out.println("Zoom Fit");}
+            if (imagePanel != null && imagePanel.hasImage()){imagePanel.zoomFit();}
         });
 
         //add text fields
