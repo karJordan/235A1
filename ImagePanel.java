@@ -87,15 +87,15 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             double scaleY = yFlipped ? -1 : 1;
 
             //center image
-            double tx = (xFlipped ? image.getWidth() : 0);
-            double ty = (yFlipped ? image.getHeight() : 0);
+            double tx = (xFlipped ? imgWidth: 0);
+            double ty = (yFlipped ? imgHeight : 0);
 
             //AffineTransform to scale image
             AffineTransform transform = new AffineTransform();
 
 
             //translate to center
-            transform.translate(drawX + scaleFactor * tx, drawY + scaleFactor * ty);
+            transform.translate(drawX + tx * scaleFactor, drawY +  ty * scaleFactor);
 
             //Scale and flip
             transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
