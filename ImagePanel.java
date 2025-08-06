@@ -71,9 +71,12 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             int panelWidth = getWidth();
             int panelHeight = getHeight();
 
-            //centering offset
-            double drawX = (panelWidth - scaleFactor * imgWidth) / 2.0;
-            double drawY = (panelHeight - scaleFactor * imgHeight) / 2.0;
+            double scaledWidth = scaleFactor * imgWidth;
+            double scaledHeight = scaleFactor * imgHeight;
+
+            //Centering offset
+            double drawX = (panelWidth - scaledWidth) / 2.0;
+            double drawY = (panelHeight - scaledHeight) / 2.0;
 
             //for mousemoved
             imageOffsetX = (int) drawX;
@@ -83,14 +86,19 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             double scaleX = xFlipped ? -1 : 1;
             double scaleY = yFlipped ? -1 : 1;
 
+            //center image
+            double tx = (xFlipped ? image.getWidth() : 0);
+            double ty = (yFlipped ? image.getHeight() : 0);
+
             //AffineTransform to scale image
             AffineTransform transform = new AffineTransform();
-            transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
 
-            //center image
-            double tx = (xFlipped ?  imgWidth: 0);
-            double ty = (yFlipped ? imgHeight: 0);
-            transform.translate(tx + drawX  / scaleFactor, ty + drawY / scaleFactor);
+
+            //translate to center
+            transform.translate(drawX + scaleFactor * tx, drawY + scaleFactor * ty);
+
+            //Scale and flip
+            transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
 
             //System.out.println("ImagePanel width: " + getWidth());
             //System.out.println("Image width: " + image.getWidth());
@@ -98,8 +106,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             //int x2 = (getWidth() - image.getWidth()) / 2;
             //System.out.println("Image X offset: " + x2);
 
-            //draw the immage
+            //draw the image
             g2.drawImage(image, transform, this);
+            g2.setColor(Color.RED);
+            g2.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
         }
     }
 
@@ -135,13 +145,15 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void zoomFit() {
-        if (image == null){return;}
+        if (image == null) {
+            return;
+        }
         double panelWidth = getWidth();
         double panelHeight = getHeight();
         double imageWidth = image.getWidth();
         double imageHeight = image.getHeight();
 
-        scaleFactor = Math.min(panelWidth / imageWidth, panelHeight/ imageHeight);
+        scaleFactor = Math.min(panelWidth / imageWidth, panelHeight / imageHeight);
         repaint();
 
     }
