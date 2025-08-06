@@ -62,6 +62,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
         if (image != null) {
 
             int imgWidth = image.getWidth();
@@ -74,30 +75,23 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             double drawX = (panelWidth - scaleFactor * imgWidth) / 2.0;
             double drawY = (panelHeight - scaleFactor * imgHeight) / 2.0;
 
+            //for mousemoved
             imageOffsetX = (int) drawX;
             imageOffsetY = (int) drawY;
 
-            //Transform
-            AffineTransform transform = new AffineTransform();
-
-            //center
-            transform.translate(drawX, drawY);
-
-            //used for flipping image via transform.scale
+            //flip and scale
             double scaleX = xFlipped ? -1 : 1;
             double scaleY = yFlipped ? -1 : 1;
 
-            //move to image to correct posn on panel if its flipped
-            if (xFlipped) {
-                transform.translate(scaleFactor * imgWidth, 0);
-            }
-            if (yFlipped) {
-                transform.translate(0, scaleFactor * imgHeight);
-            }
-
-            //apply scale(accounts for flipping)
+            //AffineTransform to scale image
+            AffineTransform transform = new AffineTransform();
             transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
 
+            //center image
+            double tx = (xFlipped ?  imgWidth: 0);
+            double ty = (yFlipped ? imgHeight: 0);
+            transform.translate(tx + drawX  / scaleFactor, ty + drawY / scaleFactor);
+            
             //System.out.println("ImagePanel width: " + getWidth());
             //System.out.println("Image width: " + image.getWidth());
 
