@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,9 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     private BufferedImage image = null;
     private int imageOffsetX, imageOffsetY;
     private ControlPanel controlPanel;
+    private boolean xFlipped = false;
+    private boolean yFlipped = false;
+    private double scaleFactor = 1.0;
 
     public ImagePanel(int x, int y, int width, int height) {
         this.setBounds(x, y, width, height);
@@ -61,18 +65,39 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             int panelWidth = getWidth();
             int panelHeight = getHeight();
 
-            int x = (panelWidth - imgWidth) / 2;
-            int y = (panelHeight - imgHeight) / 2;
+            //centering offset
+            double drawX = (panelWidth - scaleFactor * imgWidth)/2.0;
+            double drawY =(panelHeight - scaleFactor * imgHeight)/2.0 ;
 
-            imageOffsetX = x;
-            imageOffsetY = y;
+            //Transform
+            AffineTransform transform = new AffineTransform();
+
+            //center
+            transform.translate(drawX,drawY);
+
+            //used for flipping image via transform.scale
+            double scaleX = xFlipped ? -1:1;
+            double scaleY = yFlipped ? -1:1;
+
+            //move to image to correct posn on panel if its flipped
+            if(xFlipped){
+                transform.translate(scaleFactor*imgWidth, 0);
+            }
+            if (yFlipped){
+                transform.translate(0,scaleFactor*imgHeight);
+            }
+
+            //apply scale(accounts for flipping)
+            transform.scale(scaleFactor * scaleX, scaleFactor * scaleY);
 
             //System.out.println("ImagePanel width: " + getWidth());
             //System.out.println("Image width: " + image.getWidth());
 
             //int x2 = (getWidth() - image.getWidth()) / 2;
             //System.out.println("Image X offset: " + x2);
-            g2.drawImage(image, x, y, this);
+
+            //draw the immage
+            g2.drawImage(image,transform, this);
         }
     }
 
@@ -81,11 +106,13 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void flipX() {
-
+        xFlipped = !xFlipped;
+        repaint();
     }
 
     public void flipY() {
-
+        yFlipped = !yFlipped;
+        repaint();
     }
 
     public void zoomIn() {
