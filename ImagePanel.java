@@ -78,7 +78,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             double drawX = (panelWidth - scaledWidth) / 2.0;
             double drawY = (panelHeight - scaledHeight) / 2.0;
 
-            //for mousemoved
+            //for mouseMoved
             imageOffsetX = (int) drawX;
             imageOffsetY = (int) drawY;
 
