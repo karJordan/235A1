@@ -16,9 +16,10 @@ import java.io.IOException;
 public class ImagePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     private static final double factor = 1.1;
+    private BufferedImage originalImage = null;
     private BufferedImage image = null;
-    private int imageOffsetX, imageOffsetY;
     private ControlPanel controlPanel;
+    private int imageOffsetX, imageOffsetY;
     private boolean xFlipped = false;
     private boolean yFlipped = false;
     private double scaleFactor = 1.0;
@@ -31,6 +32,7 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
         addMouseMotionListener(this);
     }
 
+
     public void setControlPanel(ControlPanel cp) {
         this.controlPanel = cp;
     }
@@ -41,7 +43,10 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
 
     public void readImage(File file) {
         try {
-            image = ImageIO.read(file);
+            originalImage = ImageIO.read(file);
+            image = originalImage;
+            xFlipped = false;
+            yFlipped = false;
             repaint();
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,25 +71,28 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             int panelHeight = getHeight();
 
             //centering offset
-            double drawX = (panelWidth - scaleFactor * imgWidth)/2.0;
-            double drawY =(panelHeight - scaleFactor * imgHeight)/2.0 ;
+            double drawX = (panelWidth - scaleFactor * imgWidth) / 2.0;
+            double drawY = (panelHeight - scaleFactor * imgHeight) / 2.0;
+
+            imageOffsetX = (int) drawX;
+            imageOffsetY = (int) drawY;
 
             //Transform
             AffineTransform transform = new AffineTransform();
 
             //center
-            transform.translate(drawX,drawY);
+            transform.translate(drawX, drawY);
 
             //used for flipping image via transform.scale
-            double scaleX = xFlipped ? -1:1;
-            double scaleY = yFlipped ? -1:1;
+            double scaleX = xFlipped ? -1 : 1;
+            double scaleY = yFlipped ? -1 : 1;
 
             //move to image to correct posn on panel if its flipped
-            if(xFlipped){
-                transform.translate(scaleFactor*imgWidth, 0);
+            if (xFlipped) {
+                transform.translate(scaleFactor * imgWidth, 0);
             }
-            if (yFlipped){
-                transform.translate(0,scaleFactor*imgHeight);
+            if (yFlipped) {
+                transform.translate(0, scaleFactor * imgHeight);
             }
 
             //apply scale(accounts for flipping)
@@ -97,12 +105,18 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             //System.out.println("Image X offset: " + x2);
 
             //draw the immage
-            g2.drawImage(image,transform, this);
+            g2.drawImage(image, transform, this);
         }
     }
 
     public void setOrig() {
-
+        if (originalImage != null) {
+            image = originalImage;
+            xFlipped = false;
+            yFlipped = false;
+            scaleFactor = 1.0;
+            repaint();
+        }
     }
 
     public void flipX() {
@@ -152,18 +166,31 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void mouseMoved(MouseEvent e) {
+        if (image == null || controlPanel == null) {
+            return;
+        }
         int mouseX = e.getX();
         int mouseY = e.getY();
 
-        int imgX = mouseX - imageOffsetX;
-        int imgY = mouseY - imageOffsetY;
+        double imgX = (mouseX - imageOffsetX) / scaleFactor;
+        double imgY = (mouseY - imageOffsetY) / scaleFactor;
 
-        if (image != null &&
-                imgX >= 0 && imgY >= 0 &&
-                imgX < image.getWidth() &&
-                imgY < image.getHeight()) {
+        if (xFlipped) {
+            imgX = image.getWidth() - 1 - imgX;
+        }
+        if (yFlipped) {
+            imgY = image.getHeight() - 1 - imgY;
+        }
 
-            int pixel = image.getRGB(imgX, imgY);
+        int ix = (int) imgX;
+        int iy = (int) imgY;
+
+
+        if (ix >= 0 && iy >= 0 &&
+                ix < image.getWidth() &&
+                iy < image.getHeight()) {
+
+            int pixel = image.getRGB(ix, iy);
             Color color = new Color(pixel, true);
 
             int r = color.getRed();
@@ -172,8 +199,8 @@ public class ImagePanel extends JPanel implements MouseListener, MouseMotionList
             int a = color.getAlpha();
 
             if (controlPanel != null) {
-                controlPanel.xField.setText(String.valueOf(imgX));
-                controlPanel.yField.setText(String.valueOf(imgY));
+                controlPanel.xField.setText(String.valueOf(ix));
+                controlPanel.yField.setText(String.valueOf(iy));
                 controlPanel.rField.setText(String.valueOf(r));
                 controlPanel.gField.setText(String.valueOf(g));
                 controlPanel.bField.setText(String.valueOf(b));
